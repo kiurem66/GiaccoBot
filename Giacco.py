@@ -1,7 +1,7 @@
 import telebot
 import pickle
 
-admins = [640632571, 156707897]
+admins = [640632571, 156707897, 854784936]
 users = []
 
 reg_err = "Mi di spiace non sei un membro della gilda ghe ghe ghe\n Prova ad usere /register"
