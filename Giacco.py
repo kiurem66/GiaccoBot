@@ -1,4 +1,5 @@
 import telebot
+import pickle
 
 admins = [640632571, 156707897]
 users = []
@@ -10,11 +11,10 @@ group_id = -793240876
 xpnextlvl = [0, 0, 0, 0, 0, 7500, 15000, 17800, 20000, 24500]
 
 
-
 token = open("token.txt", "r").readline()
 bot = telebot.TeleBot(token, False)
 
-class user:
+class User:
     def __init__(self, nome, id, level):
         self.nome = nome
         self.id = id
@@ -35,6 +35,10 @@ class user:
         if(self.can_level()):
             self.xp -= xpnextlvl[self.level]
             self.level += 1
+    
+    def __str__(self) -> str:
+        s = "{0} {1} {2}".format(self.nome, self.xp, self.level)
+        return s
     
 def write_users():
     f = open("users","wb")
@@ -61,6 +65,7 @@ def isAdmin(user_id):
 
 @bot.message_handler(commands=["xp","px"])
 def myxp(message):
+    print(message.text)
     if(isAdmin(message.from_user.id)):
         bot.reply_to(message, "Tu sei un master, non hai px")
         return
@@ -73,6 +78,7 @@ def myxp(message):
 
 @bot.message_handler(commands=["giveall"])
 def giveall(message):
+    print(message.text)
     if(isAdmin(message.from_user.id)):
         try:
             numXp = int(extract_arg(message.text))
@@ -86,8 +92,9 @@ def giveall(message):
         bot.reply_to(message, not_adm)
 
 
-bot.message_handler(commands={"saytogroup"})
+@bot.message_handler(commands=["saytogroup"])
 def say(message):
+    print(message.text)
     if isAdmin(message.from_user.id):
         try:
             to_say = extract_arg(message.text)
@@ -98,8 +105,9 @@ def say(message):
         bot.reply_to(message, not_adm)
 
 
-bot.message_handler(commands={"levelup"})
+@bot.message_handler(commands=["levelup"])
 def levelup(message):
+    print(message.text)
     if(isAdmin(message.from_user.id)):
         bot.reply_to(message, "Tu sei un master, non hai px")
         return
@@ -113,9 +121,20 @@ def levelup(message):
     user.levelup()
     write_users()
 
+@bot.message_handler(commands=["users"])
+def printusers(message):
+    if(isAdmin(message.from_user.id)):
+        text = ""
+        for u in users:
+            text += str(u) + "\n"
+        bot.reply_to(message, text)
+    else:
+        bot.reply_to(message, not_adm)
 
-bot.message_handler(commands={"give", "givepx", "givexp"})
+
+@bot.message_handler(commands=["give", "givepx", "givexp"])
 def give(message):
+    print(message.text)
     if(isAdmin(message.from_user.id)):
         try:
             numXp = int(extract_arg(message.text).split[1])
@@ -131,22 +150,25 @@ def give(message):
     else:
         bot.reply_to(message, not_adm)
 
-bot.message_handler(commands={"register"})
+@bot.message_handler(commands=["register"])
 def register(message):
+    print(message.text)
     id = message.from_user.id
     if (get_user(id) != None):
         bot.reply_to(message, "Idiota, ti conosco! Non sono ancora un goblin scemo!")
     try:
-        name = extract_arg(message.text).split[0]
-        lvl = int(extract_arg(message.text).split[1])
-        users.append(User(name, id, level))
+        name = extract_arg(message.text).split()[0]
+        lvl = int(extract_arg(message.text).split()[1]) 
+        users.append(User(name, id, lvl))
         write_users()
         bot.reply_to(message, "Perfetto, ora mi ricorderò di te, ghe ghe ghe")
-    except Exception:
-            bot.reply_to(message, "Comando errato, ghe")
+    except Exception as e:
+            print(e)
+            bot.reply_to(message, "Devi anche dirmi come ti chia e il tuo attuale livello, ghe (es: /register Giacco 3)")
 
 @bot.message_handler(commands=["delete"])
 def deluser(message):
+    print(message.text)
     u = get_user(message.from_user.id)
     if u != None:
         try:
@@ -159,7 +181,7 @@ def deluser(message):
                 bot.reply_to(message, user_error)
                 print(response)
         except:
-            bot.reply_to(message, "ATTENZIONE, stai elminando il tuo profilo e i tuoi px\n se sei sicuro ripeti il comando con l'aggiunta di YES in questo modo.\n /deluser YES")            
+            bot.reply_to(message, "ATTENZIONE, stai elminando il tuo profilo e i tuoi px\n se sei sicuro ripeti il comando con l'aggiunta di YES in questo modo.\n /delete YES")            
     else:
         bot.reply_to(message, "Mi dispiace, non ho la minima idea di chi tu sia, ghe ghe!")
 
@@ -174,7 +196,8 @@ try:
 except:
     users = []
 
-while True:
-    bot.delete_webhook()
-    bot.polling(none_stop=True)
-    print("bot reboot")
+
+bot.delete_webhook()
+bot.polling(none_stop=True)
+#print("bot reboot")
+    
