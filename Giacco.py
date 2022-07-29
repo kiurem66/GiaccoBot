@@ -10,7 +10,7 @@ group_id = -793240876
 
 xpnextlvl = [0, 0, 0, 0, 0, 7500, 15000, 17800, 20000, 24500]
 
-
+telebot.apihelper.SESSION_TIME_TO_LIVE = 60 * 5
 token = open("token.txt", "r").readline()
 bot = telebot.TeleBot(token, False)
 
@@ -73,7 +73,11 @@ def myxp(message):
     if(user == None):
         bot.reply_to(message, reg_err)
         return
-    bot.reply_to(message, "Adesso hai {0} px, ghe ghe".format(user.xp))
+    if(user.can_level()):
+        bot.reply_to(message, "Adesso hai {0} px e puoi livellare, ghe ghe".format(user.xp))
+    else:
+        bot.reply_to(message, "Adesso hai {0} px, ghe ghe".format(user.xp))
+    
 
 
 @bot.message_handler(commands=["giveall"])
@@ -137,15 +141,20 @@ def give(message):
     print(message.text)
     if(isAdmin(message.from_user.id)):
         try:
-            numXp = int(extract_arg(message.text).split[1])
-            name = extract_arg(message.text).split[0]
+            numXp = int(extract_arg(message.text).split()[1])
+            name = extract_arg(message.text).split()[0]
             for user in users:
-                if user.name == name:
+                if user.nome == name:
                     user.addXp(numXp)
                     write_users()
+                    if(user.can_level()):
+                        bot.reply_to(message, "Fatto, ghe... Ah ma può livellare!")
+                    else:
+                        bot.reply_to(message, "Fatto, ghe")
                     return
             bot.reply_to(message, "Non so di chi parli, ghe")
-        except Exception:
+        except Exception as e:
+            print(e)
             bot.reply_to(message, "Comando errato, ghe")
     else:
         bot.reply_to(message, not_adm)
@@ -177,16 +186,25 @@ def deluser(message):
                 users.remove(u)
                 write_users()
                 bot.reply_to(message, "Operazione completata... Chi cazzo sei?")
-            else:
-                bot.reply_to(message, user_error)
-                print(response)
         except:
             bot.reply_to(message, "ATTENZIONE, stai elminando il tuo profilo e i tuoi px\n se sei sicuro ripeti il comando con l'aggiunta di YES in questo modo.\n /delete YES")            
     else:
         bot.reply_to(message, "Mi dispiace, non ho la minima idea di chi tu sia, ghe ghe!")
 
 
-
+@bot.message_handler(commands=["pxu"])
+def pxu(message):
+    def give(message):
+        print(message.text)
+    if(isAdmin(message.from_user.id)):
+        name = extract_arg(message.text)
+        for user in users:
+            if user.nome == name:
+                bot.reply_to(message, str(user))
+                return
+        bot.reply_to(message, "Mi dispiace, non ho la minima idea di chi tu sia, ghe ghe!")
+    else:
+        bot.reply_to(message, not_adm)
 
 #caricamento utenti
 try:
