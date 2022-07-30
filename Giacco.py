@@ -127,6 +127,7 @@ def levelup(message):
 
 @bot.message_handler(commands=["users"])
 def printusers(message):
+    print(message.text)
     if(isAdmin(message.from_user.id)):
         text = ""
         for u in users:
@@ -173,7 +174,7 @@ def register(message):
         bot.reply_to(message, "Perfetto, ora mi ricorderò di te, ghe ghe ghe")
     except Exception as e:
             print(e)
-            bot.reply_to(message, "Devi anche dirmi come ti chia e il tuo attuale livello, ghe (es: /register Giacco 3)")
+            bot.reply_to(message, "Devi anche dirmi come ti mi e il tuo attuale livello, ghe (es: /register Giacco 3)")
 
 @bot.message_handler(commands=["delete"])
 def deluser(message):
@@ -194,15 +195,18 @@ def deluser(message):
 
 @bot.message_handler(commands=["pxu"])
 def pxu(message):
-    def give(message):
-        print(message.text)
+    print(message.text)
     if(isAdmin(message.from_user.id)):
-        name = extract_arg(message.text)
-        for user in users:
-            if user.nome == name:
-                bot.reply_to(message, str(user))
-                return
-        bot.reply_to(message, "Mi dispiace, non ho la minima idea di chi tu sia, ghe ghe!")
+        try:
+            name = extract_arg(message.text)
+            for user in users:
+                if user.nome == name:
+                    bot.reply_to(message, str(user))
+                    return
+            bot.reply_to(message, "Mi dispiace, non ho la minima idea di chi tu sia, ghe ghe!")
+        except Exception as e:
+            print(e)
+            bot.reply_to(message, "Comando errato, ghe")
     else:
         bot.reply_to(message, not_adm)
 
@@ -214,8 +218,12 @@ try:
 except:
     users = []
 
-
-bot.delete_webhook()
-bot.polling(none_stop=True)
-#print("bot reboot")
-    
+while True:
+    try:
+        bot.delete_webhook()
+        bot.send_message(group_id, "Sono di nuovo Up bastardi!")
+        bot.polling(none_stop=True)
+        print("bot reboot")
+    except Exception as e:
+        bot.send_message(640632571, "Sono crashato con errore:\n" + str(e))
+        print(e)
