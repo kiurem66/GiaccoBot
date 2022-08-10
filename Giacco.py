@@ -31,6 +31,12 @@ class User:
         self.xp += n
         return self.can_level()
 
+    def remXP(self, n):
+        if(n < 0):
+            return
+        self.xp -= n
+        return self.can_level()
+
     def levelup(self):
         if(self.can_level()):
             self.xp -= xpnextlvl[self.level]
@@ -160,12 +166,37 @@ def give(message):
     else:
         bot.reply_to(message, not_adm)
 
+
+@bot.message_handler(commands=["rem", "rempx", "remxp"])
+def rem(message):
+    print(message.text)
+    if(isAdmin(message.from_user.id)):
+        try:
+            numXp = int(extract_arg(message.text).split()[1])
+            name = extract_arg(message.text).split()[0]
+            for user in users:
+                if user.nome == name:
+                    user.remXp(numXp)
+                    write_users()
+                    if(user.can_level()):
+                        bot.reply_to(message, "Fatto, ghe... Ah ma può livellare!")
+                    else:
+                        bot.reply_to(message, "Fatto, ghe... Mi dispiace " + user.nome)
+                    return
+            bot.reply_to(message, "Non so di chi parli, ghe")
+        except Exception as e:
+            print(e)
+            bot.reply_to(message, "Comando errato, ghe")
+    else:
+        bot.reply_to(message, not_adm)
+
 @bot.message_handler(commands=["register"])
 def register(message):
     print(message.text)
     id = message.from_user.id
     if (get_user(id) != None):
         bot.reply_to(message, "Idiota, ti conosco! Non sono ancora un goblin scemo!")
+        return
     try:
         name = extract_arg(message.text).split()[0]
         lvl = int(extract_arg(message.text).split()[1]) 
@@ -218,12 +249,15 @@ try:
 except:
     users = []
 
+bot.send_message(group_id, "Sono di nuovo Up bastardi!")
 while True:
     try:
         bot.delete_webhook()
-        bot.send_message(group_id, "Sono di nuovo Up bastardi!")
         bot.polling(none_stop=True)
         print("bot reboot")
     except Exception as e:
-        bot.send_message(640632571, "Sono crashato con errore:\n" + str(e))
+        try:
+            bot.send_message(640632571, "Sono crashato con errore:\n" + str(e))
+        except:
+            print("Cannot send")
         print(e)
