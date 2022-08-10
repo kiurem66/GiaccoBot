@@ -31,12 +31,6 @@ class User:
         self.xp += n
         return self.can_level()
 
-    def remXP(self, n):
-        if(n < 0):
-            return
-        self.xp -= n
-        return self.can_level()
-
     def levelup(self):
         if(self.can_level()):
             self.xp -= xpnextlvl[self.level]
@@ -176,7 +170,7 @@ def rem(message):
             name = extract_arg(message.text).split()[0]
             for user in users:
                 if user.nome == name:
-                    user.remXp(numXp)
+                    user.xp -= numXp
                     write_users()
                     if(user.can_level()):
                         bot.reply_to(message, "Fatto, ghe... Ah ma può livellare!")
