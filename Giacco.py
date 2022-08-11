@@ -243,7 +243,7 @@ try:
 except:
     users = []
 
-bot.send_message(group_id, "Sono di nuovo Up bastardi!")
+#bot.send_message(group_id, "Sono di nuovo Up bastardi!")
 while True:
     try:
         bot.delete_webhook()
