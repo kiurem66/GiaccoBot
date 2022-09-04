@@ -120,11 +120,10 @@ def levelup(message):
         bot.reply_to(message, reg_err)
         return
     if(not user.can_level()):
-        bot.reply_to(message, "Hai provasto a fregarmi! Tu non puoi livellare!")
+        bot.reply_to(message, "Hai provato a fregarmi! Tu non puoi livellare!")
         return
     user.levelup()
-    bot.reply_to("Complimenti " + user.nome + " Hai livellato! Sei forte quasi quanto un Goblin")
-    write_users()
+    bot.reply_to(message, "Complimenti " + user.nome + " Hai livellato! Sei forte quasi quanto un Goblin")
 
 @bot.message_handler(commands=["users"])
 def printusers(message):
