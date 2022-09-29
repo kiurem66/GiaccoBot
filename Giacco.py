@@ -123,6 +123,7 @@ def levelup(message):
         bot.reply_to(message, "Hai provato a fregarmi! Tu non puoi livellare!")
         return
     user.levelup()
+    write_users()
     bot.reply_to(message, "Complimenti " + user.nome + " Hai livellato! Sei forte quasi quanto un Goblin")
 
 @bot.message_handler(commands=["users"])
