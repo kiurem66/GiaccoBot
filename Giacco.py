@@ -14,12 +14,22 @@ telebot.apihelper.SESSION_TIME_TO_LIVE = 60 * 5
 token = open("token.txt", "r").readline()
 bot = telebot.TeleBot(token, False)
 
+class Influenza:
+    def __init__(self, nome, livello):
+        self.nome = nome
+        self.livello = livello
+    
+    def __str__(self):
+        lv = "•"*self.livello
+        return f"{self.nome}: {lv}"
+
 class User:
     def __init__(self, nome, id, level):
         self.nome = nome
         self.id = id
         self.level = level
         self.xp = 0
+        self.influenze = []
     
     def can_level(self):
         if(self.xp >= xpnextlvl[self.level]):
@@ -235,6 +245,27 @@ def pxu(message):
             bot.reply_to(message, "Comando errato, ghe")
     else:
         bot.reply_to(message, not_adm)
+
+@bot.message_handler(commands=["infl"])
+def infl(message):
+    print(message.text)
+    if(isAdmin(message.from_user.id)):
+        bot.reply_to(message, "Tu sei un master, non hai influenze")
+        return
+    user = get_user(message.from_user.id)
+    if(user == None):
+        bot.reply_to(message, reg_err)
+        return
+    if(not hasattr(user, influenze)):
+        user.influenze = []
+    s = ""
+    for inf in user.influenze:
+        s += str(inf) + "\n"
+    if s == "":
+        bot.reply_to(message, "Non hai influenze!")
+        return
+    bot.reply_to(message, s)
+    
 
 #caricamento utenti
 try:
