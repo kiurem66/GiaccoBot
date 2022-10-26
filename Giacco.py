@@ -6,7 +6,7 @@ users = []
 
 reg_err = "Mi di spiace non sei un membro della gilda ghe ghe ghe\n Prova ad usere /register"
 not_adm = "Mi dispiace ma accetto ordini solo da Bridge, Thalar e Aiden, Ghe Ghe"
-group_id = -793240876
+group_id = -1001511990297
 
 xpnextlvl = [0, 0, 0, 0, 0, 7500, 15000, 17800, 20000, 24500]
 
@@ -132,7 +132,8 @@ def say(message):
         try:
             to_say = extract_arg(message.text)
             bot.send_message(group_id, to_say)
-        except Exception:
+        except Exception as e:
+            print(e)
             bot.reply_to(message, "Comando errato, ghe")
     else:
         bot.reply_to(message, not_adm)
