@@ -301,7 +301,7 @@ def setinfl(message):
     if(isAdmin(message.from_user.id)):
         try:
             level = int(extract_arg(message.text).split()[2])
-            tipo = extract_arg(message.text).split()[0]
+            tipo = extract_arg(message.text).split()[1]
             name = extract_arg(message.text).split()[0]
             for user in users:
                 if user.nome == name:
@@ -320,18 +320,11 @@ def setinfl(message):
 try:
     f = open("users","rb")
     loadUsers = pickle.load(f)
-    users = []
-    for u in loadUsers:
-        newUser = u
-        if(not hasattr(u, influenze)):
-            newUser = User(u.nome, u.id, u.level)
-            newUser.xp = u.xp
-            newUser.influenze = []
-        users.append(newUser)
     f.close()
-    write_users()
 except:
     users = []
+
+
 
 #bot.send_message(group_id, "Sono di nuovo Up bastardi!")
 while True:
