@@ -301,7 +301,7 @@ def setinfl(message):
     if(isAdmin(message.from_user.id)):
         try:
             level = int(extract_arg(message.text).split()[2])
-            tipo = extract_arg(message.text).split()[0]
+            tipo = extract_arg(message.text).split()[1]
             name = extract_arg(message.text).split()[0]
             for user in users:
                 if user.nome == name:
