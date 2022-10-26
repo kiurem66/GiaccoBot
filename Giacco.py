@@ -317,17 +317,11 @@ def setinfl(message):
         bot.reply_to(message, not_adm)
 
 #caricamento utenti
+
 try:
+
     f = open("users","rb")
-    loadUsers = pickle.load(f)
-    users = []
-    for u in loadUsers:
-        newUser = u
-        if(not hasattr(u, influenze)):
-            newUser = User(u.nome, u.id, u.level)
-            newUser.xp = u.xp
-            newUser.influenze = []
-        users.append(newUser)
+    users = pickle.load(f)
     f.close()
     write_users()
 except:
