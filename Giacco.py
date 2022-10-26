@@ -50,6 +50,25 @@ class User:
         s = "{0} {1} {2}".format(self.nome, self.xp, self.level)
         return s
     
+    def inflstr(self) -> str:
+        s = ""
+        for inf in self.influenze:
+            s += str(inf) + "\n"
+        if s == "":
+            return "Nessuna influenza!"
+        return s
+    
+    def setinfl(self, tipo, livello):
+        for i in self.influenze:
+            if i.nome == tipo:
+                if livello == 0:
+                    self.influenze.remove(i)
+                    return
+                i.livello = livello
+                return
+        self.influenze.append(Influenza(tipo, livello))
+        
+    
 def write_users():
     f = open("users","wb")
     pickle.dump(users, f)
@@ -256,22 +275,61 @@ def infl(message):
     if(user == None):
         bot.reply_to(message, reg_err)
         return
-    if(not hasattr(user, influenze)):
-        user.influenze = []
-    s = ""
-    for inf in user.influenze:
-        s += str(inf) + "\n"
-    if s == "":
-        bot.reply_to(message, "Non hai influenze!")
-        return
-    bot.reply_to(message, s)
-    
+    bot.reply_to(message, user.inflstr())
+
+@bot.message_handler(commands=["getinfl"])
+def pxu(message):
+    print(message.text)
+    if(isAdmin(message.from_user.id)):
+        try:
+            name = extract_arg(message.text)
+            for user in users:
+                if user.nome == name:
+                    bot.reply_to(message, user.inflstr())
+                    return
+            bot.reply_to(message, "Mi dispiace, non ho la minima idea di chi tu sia, ghe ghe!")
+        except Exception as e:
+            print(e)
+            bot.reply_to(message, "Comando errato, ghe")
+    else:
+        bot.reply_to(message, not_adm)
+
+
+@bot.message_handler(commands=["setinfl"])
+def setinfl(message):    
+    print(message.text)
+    if(isAdmin(message.from_user.id)):
+        try:
+            level = int(extract_arg(message.text).split()[2])
+            tipo = extract_arg(message.text).split()[0]
+            name = extract_arg(message.text).split()[0]
+            for user in users:
+                if user.nome == name:
+                    user.setinfl(tipo, level)
+                    write_users()
+                    bot.reply_to(message, "Fatto, ghe")
+                    return
+            bot.reply_to(message, "Non so di chi parli, ghe")
+        except Exception as e:
+            print(e)
+            bot.reply_to(message, "Comando errato, ghe")
+    else:
+        bot.reply_to(message, not_adm)
 
 #caricamento utenti
 try:
     f = open("users","rb")
-    users = pickle.load(f)
+    loadUsers = pickle.load(f)
+    users = []
+    for u in loadUsers:
+        newUser = u
+        if(not hasattr(u, influenze)):
+            newUser = User(u.nome, u.id, u.level)
+            newUser.xp = u.xp
+            newUser.influenze = []
+        users.append(newUser)
     f.close()
+    write_users()
 except:
     users = []
 
