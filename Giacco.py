@@ -21,7 +21,7 @@ class Influenza:
     
     def __str__(self):
         lv = "•"*self.livello
-        return f"{self.nome}: {lv}"
+        return f"{self.nome}: {lv}".replace("_", " ")
 
 class User:
     def __init__(self, nome, id, level):
